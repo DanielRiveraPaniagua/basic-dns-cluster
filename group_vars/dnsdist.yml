@@ -1,0 +1,62 @@
+---
+# Control Socket
+dnsdist_setkey: "{{ _env_dnsdist_setkey }}"
+dnsdist_controlsocket: 127.0.0.1
+
+# Webserver
+dnsdist_webserver_address: "{{ hostvars[inventory_hostname]['ansible_'~_env_network_interface.interface_name].ipv4.address }}:8001"
+dnsdist_webserver_password: "{{ _env_dnsdist_api_key }}"
+dnsdist_webserver_apikey: "{{ _env_dnsdist_api_key }}"
+
+dnsdist_webserver_acl: "127.0.0.1,{{ hostvars[groups['mgmt']|first]['ansible_'~_env_network_interface.interface_name].ipv4.address }}"
+
+# DNSdist Configuration
+dnsdist_config: |
+  -- Listen on all interfaces
+  setLocal("0.0.0.0:53", {reusePort=true})
+  addLocal("0.0.0.0:53", {reusePort=true})
+  addLocal("[::]:53", {reusePort=true})
+  addLocal("[::]:53", {reusePort=true})
+
+  -- PowerDNS Recursor Backends
+  newServer({address="127.0.0.1:5353", 
+        name="rec-{{ inventory_hostname }}", 
+        maxCheckFailures=5, rise=2,
+        useClientSubnet=true,
+        sockets=64, pool="recPool", weight=1000, mustResolve=false})
+  newServer({address="127.0.0.1:5300", 
+          name="auth-{{ inventory_hostname }}", 
+          maxCheckFailures=5, rise=2,
+          useClientSubnet=true,
+          sockets=64, pool="athPool", weight=1000, mustResolve=false})
+  
+  -- Pool Rules
+  addAction(AndRule{NetmaskGroupRule("{{ hostvars[groups['mgmt']|first]['ansible_'~_env_network_interface.interface_name].ipv4.address }}"),OpcodeRule(DNSOpcode.Notify)}, PoolAction("athPool"), {name="ath notify pool"})
+  addAction(AllRule(), PoolAction("recPool"), {name="rec pool"})
+
+  -- Static Rules
+
+  -- Trashbin attack, Drop Format error and not implemented responses after 50 req/s
+  addResponseAction(AndRule{ERCodeRule(DNSRCode.FORMERR), MaxQPSRule(50)}, DropResponseAction())
+  addResponseAction(AndRule{ERCodeRule(DNSRCode.NOTIMP), MaxQPSRule(50)}, DropResponseAction())
+
+  -- Dynamic Rules
+  
+  dbr = dynBlockRulesGroup()
+
+  -- Block for 60s any source IP that exceeded 1000 req/s over the last 10s
+  -- Log a warning message when clients exceed 500 req/s.
+  dbr:setQueryRate(1000, 10, "Exceeded query rate", 60, DNSAction.Drop, 500)
+
+  -- Block for 60s any source IP that exceeded 100k bytes/s over the last 10s
+  -- Detect Amplification and should detect tunnelling attempts.
+  -- Log a warning message when clients are exceeding 25k bytes/s.
+  dbr:setResponseByteRate(100000, 10, "Exceeded resp BW rate", 60, DNSAction.Drop, 50000)
+
+  -- Block for 60s any source IP that exceeded 200 NXD/s over the last 10s
+  -- Log a warning message when clients exceed 100 req/s.
+  dbr:setRCodeRate(DNSRCode.NXDOMAIN, 200, 10, "Exceeded NXD rate", 60, DNSAction.Drop, 100)
+
+  -- Block for 60s any source IP that exceeded 50 Servfails/s over the last 10s
+  -- Log a warning message when clients exceed 25 req/s.
+  dbr:setRCodeRate(DNSRCode.SERVFAIL, 50, 10, "Exceeded ServFail rate", 60, DNSAction.Drop, 25)

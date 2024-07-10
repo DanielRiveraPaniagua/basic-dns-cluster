@@ -1,0 +1,27 @@
+---
+
+- block:
+
+  - name: Create directories and set permission (if not exists yet)
+    no_log: "{{ item.no_log | default(omit) }}"
+    file:
+      path: "{{ item.dest | dirname }}"
+      owner: "{{ copy_files_dir_owner }}"
+      group: "{{ copy_files_dir_group }}"
+      mode: "{{ copy_files_dir_mode }}"
+      state: directory
+    with_items: "{{ copy_files | selectattr('dest', 'defined') | list }}"
+
+  - name: Copy the files
+    no_log: "{{ item.no_log | default(omit) }}"
+    copy:
+      content: "{{ item.content | default(omit) }}"
+      src: "{{ item.src | default(omit) }}"
+      dest: "{{ item.dest }}"
+      owner: "{{ item.owner | default(copy_files_owner) }}"
+      group: "{{ item.group | default(copy_files_group) }}"
+      mode: "{{ item.mode | default(copy_files_mode) }}"
+    register: _copied_files
+    with_items: "{{ copy_files }}"
+
+  

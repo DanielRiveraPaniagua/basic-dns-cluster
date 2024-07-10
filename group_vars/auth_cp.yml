@@ -1,0 +1,21 @@
+# Auth CP additional configuration
+_pdns_config:
+
+  # Incoming AXFR queries
+  allow-axfr-ips: "{{ _allow_axfr_ips }}"
+
+  # Turns on primary operations
+  primary: yes
+
+_allow_axfr_ips: "127.0.0.1,[::1],{{ auth_up_list | join(',') }}"
+
+auth_up_list: "{{ _auth_up_list | default([]) | from_yaml }}"
+_auth_up_list: |
+  {% for item in groups['auth_up'] | default([]) %}
+  - {{ hostvars[item]['ansible_'~_env_network_interface.interface_name].ipv4.address }}
+  {% endfor %}
+
+# Copy Files
+copy_files_mode: "0777"
+copy_files_dir_mode: "0777"
+copy_files: "{{ _env_auth_cp_copy_files | default ([]) }}"

@@ -1,0 +1,22 @@
+# Auth UP additional configuration
+_pdns_config:
+
+  # Each tenant has a dedicated port
+  local-port: "5300"
+  local-address: "127.0.0.1"
+
+  # NOTIFY comming via DNSdist
+  trusted-notification-proxy: "127.0.0.1/32"
+
+  # Turn on operating as a secondary
+  secondary: yes
+
+# Copy Files
+copy_files_mode: "0777"
+copy_files_dir_mode: "0777"
+copy_files: "{{ _env_auth_up_copy_files | default ([]) }}"
+
+# Create Directory
+create_dir_mode: "0777"
+create_dir_list:
+  - /var/lib/powerdns/zones/

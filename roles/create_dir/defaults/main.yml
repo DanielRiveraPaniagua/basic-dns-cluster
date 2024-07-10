@@ -1,0 +1,8 @@
+---
+# Directory permissions
+create_dir_owner: "root"
+create_dir_group: "root"
+create_dir_mode: "0755"
+
+# Directory list to create
+create_dir_list: []

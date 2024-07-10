@@ -1,0 +1,49 @@
+---
+# Configuration directory and files
+pdns_rec_config_lua_file_content: |
+  -- RPZ Feed
+  {{ _env_pdns_rec_lua_config_rpz | default("")}}
+
+# Recursor Webserver ACL
+_rec_webserver_allow_from: "127.0.0.1,{{ hostvars[groups['mgmt']|first]['ansible_'~_env_network_interface.interface_name].ipv4.address }}"
+
+# Recursor configuration
+pdns_rec_config: 
+  
+  # Access to the server
+  local-address: 127.0.0.1
+  local-port: 5353
+  allow-from: '127.0.0.1/8'
+  allow-notify-from: "127.0.0.0/8"
+  
+  # Outgoing queries interface
+  query-local-address: "0.0.0.0"
+
+  # Threads
+  threads: 2
+  reuseport: "yes"
+  max-mthreads: 8192
+
+  # API Configuration
+  webserver: yes
+  webserver-address: "{{ hostvars[inventory_hostname]['ansible_'~_env_network_interface.interface_name].ipv4.address }}"
+  webserver-allow-from: "{{ _rec_webserver_allow_from }}"
+  webserver-port: "8002"
+  webserver-loglevel: "none" # detailed
+  security-poll-suffix: ""
+  api-key: "{{ _env_pdns_rec_api_key }}"
+
+  # Logs
+  log-common-errors: "yes"
+  loglevel: 6
+
+  # DNSSEC
+  dnssec: "off"
+  aggressive-nsec-cache-size: 0
+  
+  # Nice features to have
+  qname-minimization: "yes"
+  max-busy-dot-probes: 10
+
+  server-id: '{{ ansible_hostname }}'
+  forward-zones: "{{ _env_forward_zones }}"

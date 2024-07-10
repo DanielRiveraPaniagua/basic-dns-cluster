@@ -1,0 +1,36 @@
+---
+# General Auth configuration
+pdns_config: "{{ _default_pdns_config | combine(_pdns_config, recursive=True) }}"
+_default_pdns_config:
+  socket-dir: /var/run/pdns
+
+  # Listen address and port
+  local-port: "53"
+  local-address: "0.0.0.0"
+
+  # Enable the PowerDNS RESTFul APIs
+  api: yes
+
+  # Enable the PowerDNS Embedded WebServer
+  webserver: yes
+  webserver-port: "8003"
+  webserver-address: "{{ hostvars[inventory_hostname]['ansible_'~_env_network_interface.interface_name].ipv4.address }}"
+  webserver-allow-from: "127.0.0.1,{{ hostvars[groups['mgmt']|first]['ansible_'~_env_network_interface.interface_name].ipv4.address }}"
+  webserver-loglevel: "none"
+  security-poll-suffix: ""
+
+  default-ttl: 3600
+
+  receiver-threads: 2
+  distributor-threads: 2
+  reuseport: "yes"
+
+  # debug
+  loglevel: 6
+
+
+# Auth Backends
+pdns_backends:
+  bind:
+    config: '/etc/named/named.conf'
+    check-interval: '300'

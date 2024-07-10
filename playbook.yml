@@ -1,0 +1,44 @@
+- name: Install the PowerDNS Recursor
+  hosts: recursor
+  become: true
+  tags:
+    - recursor
+  roles:
+    - { role: PowerDNS.pdns_recursor }
+
+- name: Install PowerDNS DNSdist
+  hosts: dnsdist
+  become: true
+  gather_facts: false
+  tags:
+    - dnsdist
+  roles:
+    - { role: PowerDNS.dnsdist }
+
+- name: Pre-auth tasks
+  hosts: auth
+  become: true
+  gather_facts: false
+  tags:
+    - auth
+  roles:
+    - { role: copy_files }
+    - { role: create_dir }
+
+- name: Install PowerDNS Authoritative DNS Server
+  hosts: auth
+  become: true
+  gather_facts: false
+  tags:
+    - auth
+  roles:
+    - { role: PowerDNS.pdns }
+
+- name: Install Prometheus
+  hosts: prometheus
+  become: true
+  gather_facts: false
+  tags:
+    - monitoring
+  roles:
+    - { role: prometheus.prometheus.prometheus }

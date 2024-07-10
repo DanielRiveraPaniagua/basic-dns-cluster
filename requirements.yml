@@ -1,0 +1,19 @@
+roles:
+  # PowerDNS DNSdist
+  - src: https://github.com/PowerDNS/dnsdist-ansible
+    version: v1.5.0
+    name: PowerDNS.dnsdist
+
+  # PowerDNS Recursor
+  - src: https://github.com/PowerDNS/pdns_recursor-ansible
+    version: v1.7.1
+    name: PowerDNS.pdns_recursor
+
+  # PowerDNS Authoritative
+  - src: https://github.com/PowerDNS/pdns-ansible.git
+    version: v1.8.0
+    name: PowerDNS.pdns
+
+collections:
+  # Prometheus Community 
+  - name: prometheus.prometheus

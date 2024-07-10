@@ -1,0 +1,16 @@
+---
+
+- block:
+
+  - name: Create directories and set permission (if not exists yet)
+    no_log: "{{ item.no_log | default(omit) }}"
+    file:
+      path: "{{ item | dirname }}"
+      owner: "{{ create_dir_owner }}"
+      group: "{{ create_dir_group }}"
+      mode: "{{ create_dir_mode }}"
+      state: directory
+    with_items: "{{ create_dir_list | list }}"
+
+
+  

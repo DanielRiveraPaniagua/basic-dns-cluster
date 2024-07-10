@@ -1,0 +1,44 @@
+_target_dnsdist_list: |
+  {% for item in groups['dnsdist'] | default([]) %}
+  - {{ hostvars[item]['ansible_'~_env_network_interface.interface_name].ipv4.address }}:8001
+  {% endfor %}
+
+_target_recursor_list: |
+  {% for item in groups['recursor'] | default([]) %}
+  - {{ hostvars[item]['ansible_'~_env_network_interface.interface_name].ipv4.address }}:8002
+  {% endfor %}
+
+_target_auth_up_list: |
+  {% for item in groups['auth_up'] | default([]) %}
+  - {{ hostvars[item]['ansible_'~_env_network_interface.interface_name].ipv4.address }}:8003
+  {% endfor %}
+
+_target_auth_cp_list: |
+  {% for item in groups['auth_cp'] | default([]) %}
+  - {{ hostvars[item]['ansible_'~_env_network_interface.interface_name].ipv4.address }}:8003
+  {% endfor %}
+
+_target_prometheus_list: |
+  {% for item in groups['prometheus'] | default([]) %}
+  - {{ hostvars[item]['ansible_'~_env_network_interface.interface_name].ipv4.address }}:9090
+  {% endfor %}
+
+prometheus_scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: "{{ _target_prometheus_list| default([]) | from_yaml }}"
+  - job_name: "dnsdist"
+    static_configs:
+      - targets: "{{ _target_dnsdist_list | default([]) | from_yaml }}"
+    basic_auth:
+      username: "admin"
+      password: "{{ _env_dnsdist_api_key }}"
+  - job_name: "recursor"
+    static_configs:
+      - targets: "{{ _target_recursor_list | default([]) | from_yaml }}"
+  - job_name: "aut_up"
+    static_configs:
+      - targets: "{{ _target_auth_up_list | default([]) | from_yaml }}"
+  - job_name: "aut_cp"
+    static_configs:
+      - targets: "{{ _target_auth_cp_list | default([]) | from_yaml }}"

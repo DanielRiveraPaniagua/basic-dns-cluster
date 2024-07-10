@@ -1,0 +1,17 @@
+$TTL 60;
+$ORIGIN rpz.example.
+@          SOA ns.rpz.example. hostmaster.example.com (
+                                                        1       ; SERIAL  (current version)
+                                                        60m     ; REFRESH (check with primary if soa changed)
+                                                        1h      ; RETRY   (retry to contact primary server)
+                                                        1h      ; EXPIRE  (zone is no longer served)
+                                                        1h)     ; MINIMUM TTL (of the zone)
+                            60  IN  NS      ns1.rpz.example.
+ns1                         60  IN  A       10.160.0.11
+bad-domain-to-ip.com        60  IN  A       127.0.0.1
+bad-domain-to-cname.com     60  IN  CNAME   redirected-domain.local
+bad-domain-to-drop.com      60  IN  CNAME   rpz-drop.
+ok.example.org              60  IN  CNAME   rpz-passthru.
+example.org                 60  IN  CNAME   .                           ; return NXDOMAIN
+www.example.org             60  IN  CNAME   *.                          ; return NODATA
+

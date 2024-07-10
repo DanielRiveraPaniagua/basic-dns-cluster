@@ -1,0 +1,29 @@
+# Define interface to work with
+_env_network_interface:
+  interface_name: "eth0"
+  address_class: "ipv4"
+  address_idx: 0
+
+# Recursor
+_env_pdns_rec_api_key: "testapikey221"
+_env_forward_zones:
+  - "example.com=127.0.0.1:5300"
+
+# DNSDist
+_env_dnsdist_setkey: "PNuPc0Blf32akBO6yOJkIipWrJW67ODvPs4g/81Nqw0="
+_env_dnsdist_api_key: "builds3cret"
+
+_env_pdns_rec_lua_config_rpz: |
+  rpzPrimary("127.0.0.1:5300", "rpz.example")
+
+_env_auth_cp_copy_files:
+  - content: "{{ lookup('file', 'auth_cp/named.conf') }}"
+    dest: "/etc/named/named.conf"
+  - content: "{{ lookup('file', 'auth_cp/rpz.example.zone') }}"
+    dest: "/var/lib/powerdns/zones/rpz.example.zone"
+  - content: "{{ lookup('file', 'auth_cp/example.com.zone') }}"
+    dest: "/var/lib/powerdns/zones/example.com.zone"
+
+_env_auth_up_copy_files:
+  - content: "{{ lookup('file', 'auth_up/named.conf') }}"
+    dest: "/etc/named/named.conf"

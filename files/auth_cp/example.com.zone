@@ -1,0 +1,17 @@
+$TTL 360;
+$ORIGIN example.com.
+@          SOA ns1.example.com hostmaster.example.com (
+                                                        1       ; SERIAL  (current version)
+                                                        60m     ; REFRESH (check with primary if soa changed)
+                                                        1h      ; RETRY   (retry to contact primary server)
+                                                        1h      ; EXPIRE  (zone is no longer served)
+                                                        1h)     ; MINIMUM TTL (of the zone)
+        60  IN  NS      ns1.example.com.
+
+ns1     60  IN  A       10.160.0.11
+
+test    60  IN  A       192.168.0.15
+        60  IN  A       192.168.0.16
+        60  IN  TXT     "test domain"
+
+        

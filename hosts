@@ -1,0 +1,29 @@
+drp-01  ansible_user="cloud-user"   ansible_host="10.50.1.25"  ansible_ssh_private_key_file=".ssh/cl-qa"
+drp-02  ansible_user="cloud-user"   ansible_host="10.50.1.206"   ansible_ssh_private_key_file=".ssh/cl-qa"
+
+
+[env_dns]
+drp-01
+drp-02
+
+[dnsdist]
+drp-01
+
+[recursor]
+drp-01
+
+[mgmt:children]
+auth_cp
+
+[auth:children]
+auth_cp
+auth_up
+
+[auth_cp]
+drp-02
+
+[auth_up]
+drp-01
+
+[prometheus:children]
+mgmt

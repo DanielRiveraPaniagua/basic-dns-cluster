@@ -1,0 +1,21 @@
+dnsdist_install_epel: false
+
+# Repos
+## Auth
+pdns_install_repo: "{{ pdns_auth_powerdns_repo_48 }}"   
+## Recursor
+pdns_rec_install_repo: "{{ pdns_rec_powerdns_repo_50 }}"  
+## DNSdist
+dnsdist_install_repo:
+  apt_repo_origin: repo.powerdns.com
+  apt_repo: deb [arch=amd64] http://repo.powerdns.com/{{ ansible_distribution | lower }} {{ ansible_distribution_release | lower }}-dnsdist-19 main
+  gpg_key: http://repo.powerdns.com/FD380FBB-pub.asc
+  gpg_key_id: 9FAAA5577E8FCF62093D036C1B0C6205FD380FBB
+  yum_repo_baseurl: http://repo.powerdns.com/centos/$basearch/$releasever/dnsdist-19
+  yum_debug_symbols_repo_baseurl: http://repo.powerdns.com/centos/$basearch/$releasever/dnsdist-19/debug
+  name: powerdns-dnsdist-17
+
+# Versions
+dnsdist_package_version: "1.9.5"
+pdns_rec_package_version: "5.0.6"
+pdns_package_version: "4.8.4"

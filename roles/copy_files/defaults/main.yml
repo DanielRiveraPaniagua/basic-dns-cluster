@@ -1,0 +1,14 @@
+---
+
+# Files permissions
+copy_files_owner: "root"
+copy_files_group: "root"
+copy_files_mode: "0755"
+
+# Directory permissions
+copy_files_dir_owner: "root"
+copy_files_dir_group: "root"
+copy_files_dir_mode: "0755"
+
+# Files to copy
+copy_files: []
