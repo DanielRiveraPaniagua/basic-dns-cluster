@@ -2,7 +2,7 @@
 
 ## Installing virtual environment
 
-PDNS Cache Lite requires python 3
+The basic-dns-cluster project utilized python 3
 
 ```bash
 python3 -m venv venv
@@ -19,7 +19,7 @@ ansible-galaxy install -r requirements.yml
 
 ## Provisioning
 
-Test connectivity to qa servers
+Test connectivity to servers
 
 ```bash
 ansible -m setup -i hosts all
@@ -29,7 +29,7 @@ Deploy and configure the PowerDNS software (single command)
 
 ```bash
 # Deploy all the components in a single run
-ansible-playbook  -i hosts playbook.yml --diff -v
+ansible-playbook -i hosts playbook.yml --diff -v
 ```
 
 Deploy and configure the PowerDNS software (split components)
